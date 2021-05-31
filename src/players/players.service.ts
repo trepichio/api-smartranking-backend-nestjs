@@ -4,111 +4,90 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { createPlayerDTO } from './dtos/createPlayer.dto';
 import { PlayerInterface } from './interfaces/player.interface';
 
 @Injectable()
 export class PlayersService {
-  private readonly logger = new Logger(PlayersService.name);
+  constructor(
+    @InjectModel('Player') private readonly playerModel: Model<PlayerInterface>,
+  ) {}
 
-  private players: PlayerInterface[] = [];
+  private readonly logger = new Logger(PlayersService.name);
 
   async createUpdatePlayer(
     dto: createPlayerDTO,
   ): Promise<void | PlayerInterface> {
     const { email } = dto;
 
-    const playerIndex = this.players.findIndex(
-      (player) => player.email === email,
-    );
+    const playerFound = await this.playerModel.findOne({ email }).exec();
 
-    if (playerIndex !== -1) {
-      return this.update(dto, playerIndex);
+    if (playerFound) {
+      return await this.update(dto);
     } else {
-      return this.create(dto);
+      return await this.create(dto);
     }
   }
 
   async getAllPlayers(): Promise<PlayerInterface[]> {
-    return this.listPlayers();
+    return await this.listPlayers();
   }
 
   async getPlayer(email: string): Promise<PlayerInterface> {
-    return this.findOne({ email });
+    return await this.findOne({ email });
   }
 
   async deletePlayer(id: string): Promise<void> {
-    this.deleteOne({ id });
+    await this.deleteOne({ id });
   }
 
-  private create(dto: createPlayerDTO): void {
-    const { name, email, mobileNumber } = dto;
+  private async create(dto: createPlayerDTO): Promise<PlayerInterface> {
+    const createdPlayer = new this.playerModel(dto);
 
-    const player: PlayerInterface = {
-      _id: randomUUID(),
-      name,
-      email,
-      mobileNumber,
-      ranking: 'A',
-      rankingPosition: 1,
-      urlProfilePicture: 'http://fakeimg.pl/50x50?font=lobster',
-    };
-
-    this.logger.log(`createPlayerDTO: ${JSON.stringify(player)}`);
-
-    this.players = [...this.players, player];
+    return await createdPlayer.save();
   }
 
-  private update(dto: createPlayerDTO, playerIndex = -1): PlayerInterface {
+  private async update(dto: createPlayerDTO): Promise<PlayerInterface> {
     const { email } = dto;
 
-    if (playerIndex === -1) {
-      playerIndex = this.players.findIndex((player) => player.email === email);
-    }
-
-    this.logger.log(
-      `old player info: ${JSON.stringify(this.players[playerIndex])}`,
-    );
-
-    this.players[playerIndex] = Object.assign(
-      {},
-      this.players[playerIndex],
-      dto,
-    );
-
-    this.logger.log(
-      `updated player info: ${JSON.stringify(this.players[playerIndex])}`,
-    );
-
-    return this.players[playerIndex];
+    return await this.playerModel
+      .findOneAndUpdate({ email }, { $set: dto })
+      .exec();
   }
 
-  private listPlayers(): PlayerInterface[] {
-    return this.players;
+  private async listPlayers(): Promise<PlayerInterface[]> {
+    return await this.playerModel.find().exec();
   }
 
-  private findOne(query): PlayerInterface {
-    const player = this.players.find((player) => player.email === query.email);
-
-    if (!player) {
+  private async findOne(query): Promise<PlayerInterface> {
+    try {
+      const player = await this.playerModel
+        .findOne({ email: query.email })
+        .exec();
+      this.logger.log(`player: ${JSON.stringify(player)}`);
+      return player;
+    } catch (err) {
       throw new NotFoundException(`Player with email ${query.email} not found`);
     }
-    this.logger.log(`player: ${JSON.stringify(player)}`);
-    return player;
   }
 
-  private deleteOne(query): void {
+  private async deleteOne(query): Promise<PlayerInterface> {
     const { id } = query;
 
-    const playerIndex = this.players.findIndex((player) => player._id === id);
-
-    if (playerIndex === -1) {
+    try {
+      const deletedPlayer = await this.playerModel.findByIdAndRemove(id).exec();
+      if (!deletedPlayer) {
+        throw new Error(`Player with id ${id} does not exist`);
+      }
+      this.logger.log(`deleted player with id: ${JSON.stringify(id)}`);
+      return deletedPlayer;
+    } catch (err) {
+      this.logger.error(err);
       throw new InternalServerErrorException(
         `Could not delete player with id ${id}.`,
       );
     }
-    this.logger.log(`deleted player with id: ${JSON.stringify(id)}`);
-    this.players.splice(playerIndex, 1);
   }
 }
