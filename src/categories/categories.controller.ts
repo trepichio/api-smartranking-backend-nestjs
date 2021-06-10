@@ -9,7 +9,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CustomValidationParamsPipe } from 'src/common/pipes/custom-validation-params';
+import { ValidationParamsPipe } from 'src/common/pipes/validation-params';
 import { CategoriesService } from './categories.service';
 import { createCategoryDTO } from './dtos/createCategory.dto';
 import { updateCategoryDTO } from './dtos/updateCategory.dto';
@@ -28,7 +28,7 @@ export class CategoriesController {
   @Put(':category')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async update(
-    @Param('category', CustomValidationParamsPipe) category: string,
+    @Param('category', ValidationParamsPipe) category: string,
     @Body() dto: updateCategoryDTO,
   ) {
     return await this.categoriesService.updateCategory(category, dto);
@@ -51,7 +51,7 @@ export class CategoriesController {
 
   @Get(':category')
   async getOne(
-    @Param('category', CustomValidationParamsPipe) category: string,
+    @Param('category', ValidationParamsPipe) category: string,
   ): Promise<string> {
     return JSON.stringify({
       data: {
@@ -63,7 +63,7 @@ export class CategoriesController {
 
   @Delete(':id')
   async deleteOne(
-    @Param('id', CustomValidationParamsPipe) id: string,
+    @Param('id', ValidationParamsPipe) id: string,
   ): Promise<void> {
     await this.categoriesService.deleteCategory(id);
   }

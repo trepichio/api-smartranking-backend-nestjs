@@ -10,7 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CustomValidationParamsPipe } from 'src/common/pipes/custom-validation-params';
+import { ValidationParamsPipe } from 'src/common/pipes/validation-params';
 import { createPlayerDTO } from './dtos/createPlayer.dto';
 import { updatePlayerDTO } from './dtos/updatePlayer.dto';
 import { PlayersService } from './players.service';
@@ -28,7 +28,7 @@ export class PlayersController {
   @Put(':id')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async update(
-    @Param('id', CustomValidationParamsPipe) id: string,
+    @Param('id', ValidationParamsPipe) id: string,
     @Body() dto: updatePlayerDTO,
   ) {
     return await this.playersService.updatePlayer(id, dto);
@@ -45,9 +45,7 @@ export class PlayersController {
   }
 
   @Get(':id')
-  async getOne(
-    @Param('id', CustomValidationParamsPipe) id: string,
-  ): Promise<string> {
+  async getOne(@Param('id', ValidationParamsPipe) id: string): Promise<string> {
     return JSON.stringify({
       data: {
         player: await this.playersService.getPlayerById(id),
@@ -58,7 +56,7 @@ export class PlayersController {
 
   @Delete(':id')
   async deleteOne(
-    @Param('id', CustomValidationParamsPipe) id: string,
+    @Param('id', ValidationParamsPipe) id: string,
   ): Promise<void> {
     await this.playersService.deletePlayer(id);
   }
