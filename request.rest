@@ -9,7 +9,7 @@ Content-Type: application/json
   "mobileNumber": "12997456754"
 }
 
-### Update players
+### Update a player
 PUT http://localhost:8080/api/v1/players/60b6970220319d296733effc HTTP/1.1
 Content-Type: application/json
 
@@ -26,3 +26,105 @@ GET http://localhost:8080/api/v1/players/60b6970220319d296733effc HTTP/1.1
 
 ### Delete a player
 DELETE http://localhost:8080/api/v1/players/60b6970220319d296733effc HTTP/1.1
+
+## Categories
+### Create Categories
+POST http://localhost:8080/api/v1/categories/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "category": "A",
+  "description": "Category A",
+  "events": [
+    {
+      "name": "Victory",
+      "operation": "+",
+      "value": 30
+    },
+    {
+      "name": "Victory_Leader",
+      "operation": "+",
+      "value": 50
+    },
+    {
+      "name": "Defeat",
+      "operation": "+",
+      "value": 0
+    }
+  ]
+}
+
+### Update a category
+PUT http://localhost:8080/api/v1/categories/A HTTP/1.1
+Content-Type: application/json
+
+{
+  "description": "Category A",
+  "events": [
+    {
+      "name": "Victory",
+      "operation": "+",
+      "value": 30
+    },
+    {
+      "name": "Victory_Leader",
+      "operation": "+",
+      "value": 50
+    },
+    {
+      "name": "Defeat",
+      "operation": "+",
+      "value": 0
+    }
+  ]
+}
+
+
+### Get all categories
+GET http://localhost:8080/api/v1/categories HTTP/1.1
+
+### Get a category
+GET http://localhost:8080/api/v1/categories/A HTTP/1.1
+
+### Delete a category
+DELETE http://localhost:8080/api/v1/categories/60ba5b6855d6ac7c69166e1d HTTP/1.1
+
+### Add Player to a Category
+POST http://localhost:8080/api/v1/categories/A/players/60b6970220319d296733eff HTTP/1.1
+
+
+## Challenges
+### Create challenges
+POST http://localhost:8080/api/v1/challenges/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "dateTimeChallenge": "2020-05-04 18:00:00",
+  "requester": "60b6970220319d296733effc",
+  "players": [
+    {
+      "_id": "60b6970220319d296733effc"
+    },
+    {
+      "_id": "60b6a2add60d4d311655c702"
+    }
+  ]
+}
+
+### Update a challenge
+PUT http://localhost:8080/api/v1/challenges/60c2b20622c588e150729277 HTTP/1.1
+Content-Type: application/json
+
+{
+  "dateTimeChallenge": "2020-08-01 20:00:00",
+  "status": "ACCEPTED"
+}
+
+### Get all challenges
+GET http://localhost:8080/api/v1/challenges HTTP/1.1
+
+### Get all challenges of a player
+GET http://localhost:8080/api/v1/challenges?playerId=60b6970220319d296733effc HTTP/1.1
+
+### Delete a challenge
+DELETE http://localhost:8080/api/v1/challenges/60c2b20622c588e150729277 HTTP/1.1
