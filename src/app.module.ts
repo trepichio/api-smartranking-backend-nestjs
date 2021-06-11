@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import config from './config/database';
 import { PlayersModule } from './players/players.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ChallengesModule } from './challenges/challenges.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { CategoriesModule } from './categories/categories.module';
     MongooseModule.forRoot(process.env.DATABASE_URL, config),
     PlayersModule,
     CategoriesModule,
+    ChallengesModule,
   ],
   controllers: [],
   providers: [],

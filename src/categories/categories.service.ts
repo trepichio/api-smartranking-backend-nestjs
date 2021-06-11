@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { PlayerInterface } from 'src/players/interfaces/player.interface';
 import { PlayersService } from 'src/players/players.service';
 import { createCategoryDTO } from './dtos/createCategory.dto';
 import { updateCategoryDTO } from './dtos/updateCategory.dto';
@@ -88,6 +89,14 @@ export class CategoriesService {
 
   async deleteCategory(id: string): Promise<void> {
     await this.deleteOne({ id });
+  }
+
+  async getCategoryByPlayer(
+    playerId: PlayerInterface,
+  ): Promise<CategoryInterface> {
+    return await this.categoryModel
+      .findOne({ players: { $all: [playerId] } })
+      .exec();
   }
 
   private async create(dto: createCategoryDTO): Promise<CategoryInterface> {
