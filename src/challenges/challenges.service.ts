@@ -29,7 +29,9 @@ export class ChallengesService {
   }
 
   async getAllByPlayerId(playerId: string): Promise<ChallengeInterface[]> {
-    return await this.challengeModel.find({ players: { $all: [playerId] } });
+    return await this.challengeModel
+      .find({ players: { $all: [playerId] } })
+      .populate('players');
   }
 
   async create(dto: createChallengeDTO): Promise<void> {
