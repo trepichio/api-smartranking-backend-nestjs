@@ -77,21 +77,47 @@ export class ChallengesService {
     challengeId: string,
     dto: updateChallengeDTO,
   ): Promise<void> {
-    const challengeFound = await this.challengeModel
-      .findById(challengeId)
-      .exec();
+    const challengeFound = await this.getChallengeById(challengeId);
 
-    if (!challengeFound) {
-      throw new NotFoundException(
-        `This challenge cannot be updated because it has not be found`,
-      );
+    /**
+     * add Date and Time for Response when updating status
+     */
+    if (dto.status) {
+      challengeFound.dateTimeReply = new Date();
     }
 
-    return await this.update(challengeFound.id, dto);
+    Object.assign(challengeFound, dto);
+
+    return await this.update(challengeFound.id, challengeFound);
   }
 
   async deleteChallenge(challengeId: string) {
-    const challengeFound = await this.challengeModel.findById(challengeId);
+    const challengeFound = await this.getChallengeById(challengeId);
+
+    await this.delete(challengeFound.id);
+  }
+
+
+  
+
+  private async update(
+    id: string,
+    data: ChallengeInterface | { status: ChallengeStatus },
+  ): Promise<void> {
+    this.logger.log(`data to update: ${JSON.stringify(data, null, 2)}`);
+    await this.challengeModel.findByIdAndUpdate(id, { $set: data }).exec();
+  }
+
+  private async delete(id: string): Promise<void> {
+    await this.update(id, { status: ChallengeStatus.CANCELLED });
+  }
+
+  private async getChallengeById(
+    challengeId: string,
+  ): Promise<ChallengeInterface> {
+    const challengeFound = await this.challengeModel
+      .findById(challengeId)
+      .exec();
 
     if (!challengeFound) {
       throw new NotFoundException(
@@ -99,17 +125,6 @@ export class ChallengesService {
       );
     }
 
-    await this.delete(challengeFound.id);
-  }
-
-  private async update(
-    id: string,
-    dto: updateChallengeDTO | { status: ChallengeStatus },
-  ): Promise<void> {
-    await this.challengeModel.findByIdAndUpdate(id, { $set: dto }).exec();
-  }
-
-  private async delete(id: string): Promise<void> {
-    await this.update(id, { status: ChallengeStatus.CANCELLED });
+    return challengeFound;
   }
 }
