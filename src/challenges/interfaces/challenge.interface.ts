@@ -1,4 +1,5 @@
 import { Document } from 'mongoose';
+import { MatchInterface } from 'src/challenges/interfaces/match.interface';
 import { PlayerInterface } from 'src/players/interfaces/player.interface';
 import { ChallengeStatus } from './challengeStatus.enum';
 
@@ -11,15 +12,4 @@ export interface ChallengeInterface extends Document {
   category: string;
   players: Array<PlayerInterface>;
   match: MatchInterface;
-}
-
-export interface MatchInterface extends Document {
-  category: string;
-  def: PlayerInterface;
-  result: Array<ResultInterface>;
-  players: Array<PlayerInterface>;
-}
-
-export interface ResultInterface {
-  set: string;
 }
