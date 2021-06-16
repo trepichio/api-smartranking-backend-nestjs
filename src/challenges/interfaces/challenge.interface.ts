@@ -1,4 +1,4 @@
-import { Date, Document } from 'mongoose';
+import { Document } from 'mongoose';
 import { PlayerInterface } from 'src/players/interfaces/player.interface';
 import { ChallengeStatus } from './challengeStatus.enum';
 
