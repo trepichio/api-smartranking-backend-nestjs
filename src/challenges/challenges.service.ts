@@ -34,7 +34,7 @@ export class ChallengesService {
       .populate('players');
   }
 
-  async create(dto: createChallengeDTO): Promise<void> {
+  async create(dto: createChallengeDTO): Promise<ChallengeInterface> {
     const { requester, players } = dto;
 
     let playersFound = [];
@@ -70,7 +70,7 @@ export class ChallengesService {
     };
 
     const newChallenge = new this.challengeModel(challenge);
-    await newChallenge.save();
+    return await newChallenge.save();
   }
 
   async updateChallenge(

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Logger,
   Post,
   Put,
   Query,
@@ -20,6 +21,7 @@ import { ChallengeInterface } from './interfaces/challenge.interface';
 export class ChallengesController {
   constructor(private readonly challengesService: ChallengesService) {}
 
+  private readonly logger = new Logger(ChallengesController.name);
   @Get()
   async getAll(
     @Query('playerId') playerId: string,
@@ -32,8 +34,9 @@ export class ChallengesController {
 
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async create(@Body() dto: createChallengeDTO): Promise<void> {
-    await this.challengesService.create(dto);
+  async create(@Body() dto: createChallengeDTO): Promise<ChallengeInterface> {
+    this.logger.log(`createChallengeDTO: ${JSON.stringify(dto)}`);
+    return await this.challengesService.create(dto);
   }
 
   @Put(':challengeId')
