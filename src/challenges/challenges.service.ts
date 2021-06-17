@@ -54,12 +54,18 @@ export class ChallengesService {
 
     let playersFound = [];
 
+    /**
+     * Check if requester is one of the match's players
+     */
     if (!players.find((p) => p._id === requester)) {
       throw new BadRequestException(
         'The requester player is not included in the challenge',
       );
     }
 
+    /**
+     * Check if players exist on database
+     */
     for (const { _id } of players) {
       playersFound = [
         ...playersFound,
@@ -67,6 +73,9 @@ export class ChallengesService {
       ];
     }
 
+    /**
+     * Check if requester is already registered in any Category
+     */
     const requesterCategoryFound =
       await this.categoriesService.getCategoryByPlayer(requester);
 
@@ -76,6 +85,9 @@ export class ChallengesService {
       );
     }
 
+    /**
+     * Mix provided user input with Request time, requester category and PENDING status
+     */
     const challenge = {
       ...dto,
       category: requesterCategoryFound.category,
@@ -83,6 +95,9 @@ export class ChallengesService {
       status: ChallengeStatus.PENDING,
     };
 
+    /**
+     * and create the challenge!
+     */
     const newChallenge = new this.challengeModel(challenge);
     return await newChallenge.save();
   }
@@ -115,32 +130,55 @@ export class ChallengesService {
     challengeId: string,
     { winner, result }: addMatchToChallengeDTO,
   ): Promise<void> {
+    /**
+     * Check if challenge exists in database
+     */
     const challengeFound = await this.getChallengeById(challengeId);
 
+    /**
+     * and if provided player belongs to this challenge
+     */
     if (!challengeFound.players.find((playerId) => playerId == winner)) {
       throw new BadRequestException(
         `The winner player ${winner} doesn't belong to the challenge ${challengeId}`,
       );
     }
 
+    /**
+     * and also if there is already a added match
+     */
     if (challengeFound.match.winner) {
       throw new BadRequestException(
         `Challenge ${challengeId} already has a match registered. If you want to update info, use the correct endpoint.`,
       );
     }
 
+    /**
+     * then add category and players of this challenge to the match
+     */
     const match = {
       category: challengeFound.category,
       winner,
       result,
       players: challengeFound.players,
     };
-  
+
     const newMatch = new this.matchModel(match);
+
+    /**
+     * save match in the database
+     */
     const matchSaved = await newMatch.save();
 
+    /**
+     * set Challenge's status as concluded and associate the match
+     */
     challengeFound.status = ChallengeStatus.FINISHED;
     challengeFound.match = matchSaved._id;
+
+    /**
+     * and then update the challenge in the database
+     */
     await challengeFound.save().catch(async (error) => {
       this.logger.error(error);
       /**

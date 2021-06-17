@@ -49,10 +49,19 @@ export class CategoriesService {
     const category = params['category'];
     const playerId = params['playerId'];
 
+    /**
+     * Check if Category exists on database
+     */
     const categoryFound = await this.findOne({ category });
 
+    /**
+     * and also the player
+     */
     await this.playersService.getPlayerById(playerId);
 
+    /**
+     * Check if player is already in the provided category
+     */
     const playerAlreadyAdded = categoryFound.players.find(
       (player) => player.id === playerId,
     );
@@ -63,6 +72,7 @@ export class CategoriesService {
       );
     }
 
+    /** if not then add it */
     categoryFound.players.push(playerId);
 
     await this.categoryModel
