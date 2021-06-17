@@ -67,11 +67,10 @@ export class ChallengesService {
       ];
     }
 
-    const categoryFound = await this.categoriesService.getCategoryByPlayer(
-      requester,
-    );
+    const requesterCategoryFound =
+      await this.categoriesService.getCategoryByPlayer(requester);
 
-    if (!categoryFound) {
+    if (!requesterCategoryFound) {
       throw new BadRequestException(
         'The requester has not been added to any category',
       );
@@ -79,7 +78,7 @@ export class ChallengesService {
 
     const challenge = {
       ...dto,
-      category: categoryFound.category,
+      category: requesterCategoryFound.category,
       dateTimeRequest: new Date(),
       status: ChallengeStatus.PENDING,
     };
