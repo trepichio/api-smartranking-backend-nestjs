@@ -26,7 +26,7 @@ export const ChallengeSchema = new mongoose.Schema(
       },
     ],
     match: {
-      def: { type: String },
+      winner: { type: String },
       result: [
         {
           set: {
