@@ -1,13 +1,15 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsNotIn } from 'class-validator';
+import { IsDateString, IsEnum, IsNotIn, IsOptional } from 'class-validator';
 import { Date } from 'mongoose';
 import { ChallengeStatus } from '../interfaces/challengeStatus.enum';
+import { Transform } from 'class-transformer';
 
 export class updateChallengeDTO {
-  @IsNotEmpty()
+  @IsOptional()
   @IsDateString()
   dateTimeChallenge: Date;
 
-  @IsNotEmpty()
+  @IsOptional()
+  @Transform(({ value }) => value.toUpperCase())
   @IsEnum(ChallengeStatus)
   @IsNotIn([ChallengeStatus.PENDING])
   status: ChallengeStatus;
