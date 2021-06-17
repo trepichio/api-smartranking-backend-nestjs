@@ -40,13 +40,8 @@ export class CategoriesService {
     category: string,
     dto: updateCategoryDTO,
   ): Promise<void> {
-    const categoryFound = await this.categoryModel.findOne({ category }).exec();
+    const categoryFound = await this.findOne({ category });
 
-    if (!categoryFound) {
-      throw new NotFoundException(
-        'This category cannot be updated because it has not be found.',
-      );
-    }
     return await this.update(categoryFound.id, dto);
   }
 
