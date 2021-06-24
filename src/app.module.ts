@@ -8,7 +8,7 @@ import { ChallengesModule } from './challenges/challenges.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ expandVariables: true }),
     MongooseModule.forRoot(process.env.DATABASE_URL, config),
     PlayersModule,
     CategoriesModule,
