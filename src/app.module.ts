@@ -5,6 +5,7 @@ import config from './config/database';
 import { PlayersModule } from './players/players.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ChallengesModule } from './challenges/challenges.module';
+import { RankingsModule } from './rankings/rankings.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ChallengesModule } from './challenges/challenges.module';
     PlayersModule,
     CategoriesModule,
     ChallengesModule,
+    RankingsModule,
   ],
   controllers: [],
   providers: [],

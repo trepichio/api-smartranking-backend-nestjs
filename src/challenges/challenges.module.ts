@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CategoriesModule } from 'src/categories/categories.module';
 import { MatchSchema } from 'src/challenges/interfaces/match.schema';
 import { PlayersModule } from 'src/players/players.module';
+import { RankingsModule } from 'src/rankings/rankings.module';
 import { ChallengesController } from './challenges.controller';
 import { ChallengesService } from './challenges.service';
 import { ChallengeSchema } from './interfaces/challenge.schema';
@@ -13,6 +14,7 @@ import { ChallengeSchema } from './interfaces/challenge.schema';
     MongooseModule.forFeature([{ name: 'Match', schema: MatchSchema }]),
     PlayersModule,
     CategoriesModule,
+    RankingsModule,
   ],
   controllers: [ChallengesController],
   providers: [ChallengesService],

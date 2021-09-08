@@ -11,6 +11,7 @@ import { CategoriesService } from 'src/categories/categories.service';
 import { addMatchToChallengeDTO } from 'src/challenges/dtos/addMatchToChallenge.dto';
 import { MatchInterface } from 'src/challenges/interfaces/match.interface';
 import { PlayersService } from 'src/players/players.service';
+import { RankingsService } from 'src/rankings/rankings.service';
 import { createChallengeDTO } from './dtos/createChallenge.dto';
 import { updateChallengeDTO } from './dtos/updateChallenge.dto';
 import { ChallengeInterface } from './interfaces/challenge.interface';
@@ -27,6 +28,7 @@ export class ChallengesService {
 
     private readonly playersService: PlayersService,
     private readonly categoriesService: CategoriesService,
+    private readonly rankingsService: RankingsService,
   ) {}
 
   private readonly logger = new Logger(ChallengesService.name);
@@ -188,6 +190,11 @@ export class ChallengesService {
       await this.matchModel.deleteOne({ _id: matchSaved._id }).exec();
       throw new InternalServerErrorException();
     });
+
+    /**
+     * and finally, update the rankings
+     */
+    await this.rankingsService.processMatch(challengeFound, matchSaved);
   }
 
   private async update(
